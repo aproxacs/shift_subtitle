@@ -1,0 +1,15 @@
+== ShiftSubtitle
+It shifts the time of .srt format subtitle.
+
+== REQUIREMENTS:
+* ruby 1.8.6
+
+== INSTALL:
+* sudo gem install aproxacs-shift_subtitle
+
+== USAGE :
+* shift_subtitle -o add -t 3000 inputfile.srt
+
+# It shifts 3 seconds.
+# -o specifies the operation, "add" or "sub".
+# -t specifies the amount of time, ms.
