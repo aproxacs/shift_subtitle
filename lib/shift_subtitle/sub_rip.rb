@@ -1,6 +1,6 @@
 module ShiftSubtitle
   class SubRip
-    attr_accessor :index, :start, :end, :subtitle, :eof
+    attr_accessor :index, :start, :end, :subtitle, :last
   
     def self.read(is)
       rip = self.new
@@ -13,15 +13,15 @@ module ShiftSubtitle
       end
 
       time_strs = is.readline.chop!.split(/-->/)
-      rip.start = SubTime.new(time_strs.first.strip!)
-      rip.end = SubTime.new(time_strs.last.strip!)
+      rip.start = Time.parse(time_strs.first.strip!)
+      rip.end = Time.parse(time_strs.last.strip!)
 
       rip.subtitle = ""
       while true
         begin
           txt = is.readline
         rescue EOFError
-          rip.eof = true
+          rip.last = true
           txt = ""
         end
         break if txt.chop.empty?
@@ -31,24 +31,29 @@ module ShiftSubtitle
       rip
     end
   
-    def eof?
-      @eof
+    def last?
+      @last
     end
 
     def add_time(time)
-      @start.add_time(time)
-      @end.add_time(time)
+      @start += time.to_f/1000
+      @end+= time.to_f/1000
     end
     def sub_time(time)
-      @start.sub_time(time)
-      @end.sub_time(time)
+      @start -= time.to_f/1000
+      @end -= time.to_f/1000
     end
 
     def write(os)
       os.write("#{@index}\n")
-      os.write("#{@start.to_str} --> #{@end.to_str}\n")
+      os.write("#{timeformat(@start)} --> #{timeformat(@end)}\n")
       os.write(@subtitle)
       os.write("\n")
+    end
+
+    private
+    def timeformat(time)
+      "%s,%03d" % [time.strftime("%H:%M:%S"), time.usec/1000]
     end
   end
 end

@@ -1,6 +1,5 @@
 require "shift_subtitle/options"
 require "shift_subtitle/sub_rip"
-require "shift_subtitle/sub_time"
 
 module ShiftSubtitle
   def self.run!
@@ -16,7 +15,7 @@ module ShiftSubtitle
           rip = SubRip.read(is)
           rip.send("#{opt.operation}_time", opt.time)
           rip.write(os)
-          break if rip.eof?
+          break if rip.last?
         end
       end
     end
